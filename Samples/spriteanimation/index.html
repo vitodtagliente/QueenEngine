@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+        <title>Sprite Animation</title>          
+        <script type = 'text/javascript' src = "../../bin/queen2d.js"></script>
+        <script type = 'text/javascript' src = "../../thirdy_party/dat.gui.min.js"></script>
+        <style>
+            
+            body {
+                border: 0;
+                margin: 0;
+                padding: 0;
+            }
+            
+        </style>
+        
+    </head>
+    <body>
+        
+        <div id = 'container'>
+            <canvas id = 'game_space' ></canvas>
+        </div>        
+        
+        <script>   
+
+            var gui = new dat.GUI();
+            gui.domElement.style.position = 'absolute';
+            gui.domElement.style.right = '0px';
+            gui.domElement.style.top = '0px';
+
+            var device = new Queen2D.GraphicDevice( "game_space" );
+            device.enableFullscreen();
+            device.clear( 'white' );
+
+            var d = new Queen2D.Renderer2( device );
+            d.style = "fill";
+            
+            var bear_image = Queen2D.ImageLoader( 'assets/bear.png' );
+
+            var center = new Queen2D.Vector2(
+                device.canvas.width/2,
+                device.canvas.height/2
+            );
+
+            var walk_left = new Queen2D.AnimationSheet(
+                [ 
+                    new Queen2D.Rectangle( {x:164*2,y:0}, 164, 189 ),
+                    new Queen2D.Rectangle( {x:164*3,y:0}, 164, 189 )
+                ]
+            );
+            var walk_right = new Queen2D.AnimationSheet(
+                [ 
+                    new Queen2D.Rectangle( {x:164*2,y:189*3}, 164, 189 ),
+                    new Queen2D.Rectangle( {x:164*3,y:189*3}, 164, 189 )
+                ]
+            );
+            var sleep = new Queen2D.AnimationSheet(
+                [ 
+                    new Queen2D.Rectangle( {x:164,y:189}, 164, 189 ),
+                    new Queen2D.Rectangle( {x:164*2,y:189}, 164, 189 )
+                ]
+            );
+
+            var sprite = new Queen2D.AnimatedSprite(
+            	bear_image,
+            	center.sub( {x:82, y:94} ),
+            	{
+                    'walk_left': walk_left,
+                    'walk_right': walk_right,
+                    'sleep': sleep
+                }
+            );
+            sprite.setFramesPerSecond( 3 );
+            
+            function paint(){  
+
+               sprite.draw( d );
+                
+            }
+
+            function update(){
+
+               sprite.update( gameTime.deltaTime );
+
+            }
+
+            var gameTime = new Queen2D.GameTime();
+                        
+            gameTime.ontick = function(){
+
+                device.clear( 'black' );
+                paint();
+                update();
+
+            }
+            
+            device.onresize = function(){
+                center = new Queen2D.Vector2(
+                    device.canvas.width/2,
+                    device.canvas.height/2
+                );
+
+                if( sprite != null )
+                	sprite.position = center.sub( {x:82, y:94} );
+
+            }
+
+            gui.addFolder( 'Animation' );
+            var config = {
+                animation: 'walk_left'
+            }
+            gui.add( config, 'animation', { 'walk_left': 'walk_left', 'walk_right': 'walk_right', 'sleep': 'sleep' }).onChange(function(value){
+                sprite.setAnimation( value );
+            });        
+
+            device.onresize();
+            gameTime.start();
+
+        </script>
+    </body>
+</html>
+
+
+
+
+
+
+
+
+
+

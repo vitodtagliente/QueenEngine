@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+        <title>Nyan Cat</title>          
+        <script type = 'text/javascript' src = "../../bin/queenengine.js"></script>
+        <style>
+            
+            body {
+                border: 0;
+                margin: 0;
+                padding: 0;
+            }
+            
+        </style>
+        
+    </head>
+    <body>
+        
+        <div id = 'container'>
+            <canvas id = 'game_space' ></canvas>
+        </div>        
+        
+        <script>   
+
+            var device = new QueenEngine.GraphicDevice( "game_space" );
+            device.enableFullscreen();
+            device.clear( 'white' );
+
+            var d = new QueenEngine.Renderer2( device );
+            d.style = "fill";
+            
+            var nyan_cat_image = new QueenEngine.ImageLoader( 'assets/nyan_cat_spritesheet.png' );
+            var effect_image = new QueenEngine.ImageLoader( 'assets/effect.png' );
+            var music = new QueenEngine.AudioLoader( 'assets/music.mp3' );
+            music.loop = true;
+            music.play();
+
+            var center = new QueenEngine.Vector2(
+                device.canvas.width/2,
+                device.canvas.height/2
+            );
+            
+            var sprite = new QueenEngine.BaseSprite(
+                nyan_cat_image,
+                {x: 100, y: 200},
+                new QueenEngine.Rectangle(null, 100, 70)  
+            );
+            /*
+            var animation = new Queen2D.AnimationSheet(
+                [ 
+                    new Queen2D.Rectangle( {x:0,y:0}, 100, 70 ),
+                    new Queen2D.Rectangle( {x:100,y:0}, 100, 70 ),
+                    new Queen2D.Rectangle( {x:200,y:0}, 100, 70 ),
+                    new Queen2D.Rectangle( {x:300,y:0}, 100, 70 ),
+                    new Queen2D.Rectangle( {x:400,y:0}, 100, 70 ),
+                    new Queen2D.Rectangle( {x:500,y:0}, 100, 70 )
+                ], 10
+            );
+
+            var effect_animation = new Queen2D.AnimationSheet(
+            	[
+            		new Queen2D.Rectangle( {x:0,y:0}, 146, 70 ),
+            		new Queen2D.Rectangle( {x:146,y:0}, 146, 70 )
+            	], 10
+            );
+
+            var sprite = new Queen2D.AnimatedSprite(
+            	nyan_cat_image,
+            	center.sub( {x: 50, y:35} ),
+            	{'walk':animation}
+            );
+            sprite.setFramesPerSecond( 20 );
+
+            var sprite_effect = new Queen2D.AnimatedSprite(
+            	effect_image,
+            	center.sub( {x:136, y:35 } ),
+            	{'walk':effect_animation}
+            );
+            sprite_effect.setFramesPerSecond( 10 );
+            */
+            function paint(){                   
+               
+               //sprite_effect.draw( d );
+               //sprite.draw( d );
+               
+               d.drawTexture( nyan_cat_image, {x: 100, y: 100} );
+               sprite.draw( d );
+               sprite.debug( d );
+                
+            }
+
+            function update(){
+               //sprite.update( gameTime.deltaTime );
+               //sprite_effect.update( gameTime.deltaTime );
+            }
+
+            var gameTime = new QueenEngine.GameTime();
+                        
+            gameTime.ontick = function(){
+
+                device.clear( '#063563' );
+                paint();
+                update();
+
+            }
+            
+            device.onresize = function(){
+                center = new QueenEngine.Vector2(
+                    device.canvas.width/2,
+                    device.canvas.height/2
+                );
+                /*
+
+                if( sprite != null )
+                	sprite.position = center.sub( {x: 50, y:35} );
+
+            	if( sprite_effect != null )
+            		sprite_effect.position = center.sub( {x:136, y:35 } );
+                */
+
+            }
+
+
+            device.onresize();
+            gameTime.start();
+
+        </script>
+    </body>
+</html>
+
+
+
+
+
+
+
+
+
+

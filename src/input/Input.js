@@ -1,0 +1,4 @@
+
+QueenEngine.Input = function(){
+
+}

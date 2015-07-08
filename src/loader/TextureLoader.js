@@ -1,0 +1,2 @@
+
+QueenEngine.TextureLoader = QueenEngine.ImageLoader;
