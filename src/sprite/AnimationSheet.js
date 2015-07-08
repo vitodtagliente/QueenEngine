@@ -1,7 +1,9 @@
 
-QueenEngine.AnimationSheet = function( frames, framesPerSecond ){
+QueenEngine.AnimationSheet = function( texture, frames, framesPerSecond ){
 	var frames = frames || [];
-			
+	
+	this.texture = texture;
+	
 	var frameLength = 0;
 	var _framesPerSecond = 0;
 	
@@ -42,5 +44,5 @@ QueenEngine.AnimationSheet = function( frames, framesPerSecond ){
 		return obj;
 	}
 
-	this.framewPerSecond = framesPerSecond || 0;
+	this.framesPerSecond = framesPerSecond || 0;
 }

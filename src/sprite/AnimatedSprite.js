@@ -1,9 +1,8 @@
 
-QueenEngine.AnimatedSprite = function( texture, position, animations ){
+QueenEngine.AnimatedSprite = function( position, animations ){
 	( position ) ? ( this.position = new QueenEngine.Vector2( position.x, position.y ) ) : ( this.position = new QueenEngine.Vector2() )
 	this.userData = 'animatedsprite';
 	
-	this.texture = texture;
 	var animations = animations;
 	this.isAnimating = true;
 	var currentAnimation = null;
@@ -13,17 +12,17 @@ QueenEngine.AnimatedSprite = function( texture, position, animations ){
 		break;
 	}		
 	
-	this.scale = null;
+	this.scale = new QueenEngine.Vector2(1, 1);
 	
 	Object.defineProperty( this, 'width', {
 		get: function(){
-			return animations[ currentAnimation ].getFrame().width;			
+			return this.animation.getFrame().width * this.scale.x;			
 		}
 	} );
 	
 	Object.defineProperty( this, 'height', {
 		get: function(){
-			return animations[ currentAnimation ].getFrame().height;		
+			return this.animation.getFrame().height * this.scale.y;		
 		}
 	} );
 	
@@ -33,41 +32,51 @@ QueenEngine.AnimatedSprite = function( texture, position, animations ){
 		}
 	} );
 	
-	this.setFramesPerSecond = function( frames ) {
-		for( key in animations )
-			animations[ key ].setFramesPerSecond( frames );
-	}
-	this.setAnimation = function( name ) {
-		for( key in animations ) {
-			if( name == key ){
-				currentAnimation = name;
-				break;
-			}
+	Object.defineProperty( this, 'framesPerSecond', {
+		set: function( value ){
+			for( key in animations )
+				animations[ key ].framesPerSecond = value;
 		}
-	}
-	this.getCurrentAnimationSheet = function() {
-		return animations[ currentAnimation ];
-	}
+	} );
+	
+	Object.defineProperty( this, 'animation', {
+		set: function( value ){
+			for( key in animations ){
+				if( key == value ){
+					currentAnimation = value;
+					break;
+				}
+			}
+		},
+		get: function(){
+			return animations[ currentAnimation ];
+		}
+	} );
+	
 	this.update = function( delta ) {
-		if( currentAnimation != null && this.isAnimating ) {
-			animations[ currentAnimation ].update( delta );
+		if( this.animation != null && this.isAnimating ) {
+			this.animation.update( delta );
 		}
 		
 		this.onupdate( delta );
 	}
 	this.onupdate = function( delta ){  }
 	this.draw = function( spriteBatch ) {
-		if( currentAnimation != null ) {
-			var rect = animations[ currentAnimation ].getCurrentFrameRect();
+		if( this.animation != null ) {
 			spriteBatch.drawTexture(
-				this.texture, 
+				this.animation.texture, 
 				this.position,
-				this.scale,
-				rect
+				{x: this.width, y: this.height},
+				this.animation.getFrame()
 			);
 		}
 		
 		this.ondraw( spriteBatch );
+	}
+	this.debug = function( renderer ){
+		renderer.style = 'stroke';
+		renderer.color = this.debugColor;
+		renderer.rect( this.position, this.width, this.height );
 	}
 	this.ondraw = function( spriteBatch ){  }
 	this.clone = function(){

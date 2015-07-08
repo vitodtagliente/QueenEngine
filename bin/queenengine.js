@@ -2007,19 +2007,19 @@ QueenEngine.BaseSprite = function( texture, position, rect ){
 	this.texture = texture;
 	var sourceRectangle = rect.clone() || new QueenEngine.Rectangle( 0, 0, texture.width, texture.height );
 	
-	this.scale = null;
+	this.scale = new QueenEngine.Vector2(1, 1);
 
 	this.debugColor = '#8080C0';
 	
 	Object.defineProperty( this, 'width', {
 		get: function(){
-			return sourceRectangle.width;
+			return sourceRectangle.width * this.scale.x;
 		}
 	} );
 	
 	Object.defineProperty( this, 'height', {
 		get: function(){
-			return sourceRectangle.height;
+			return sourceRectangle.height * this.scale.y;
 		}
 	} );
 	
@@ -2037,7 +2037,7 @@ QueenEngine.BaseSprite = function( texture, position, rect ){
 		renderer.drawTexture(
 			this.texture, 
 			this.position,
-			this.scale,
+			{x: this.width, y: this.height},
 			sourceRectangle
 		);
 		
@@ -2063,11 +2063,10 @@ QueenEngine.BaseSprite = function( texture, position, rect ){
 }
 
 
-QueenEngine.AnimatedSprite = function( texture, position, animations ){
+QueenEngine.AnimatedSprite = function( position, animations ){
 	( position ) ? ( this.position = new QueenEngine.Vector2( position.x, position.y ) ) : ( this.position = new QueenEngine.Vector2() )
 	this.userData = 'animatedsprite';
 	
-	this.texture = texture;
 	var animations = animations;
 	this.isAnimating = true;
 	var currentAnimation = null;
@@ -2077,53 +2076,71 @@ QueenEngine.AnimatedSprite = function( texture, position, animations ){
 		break;
 	}		
 	
-	this.scale = null;
-
-	this.getWidth = function() {
-		return animations[ currentAnimation ].getCurrentFrameRect().width;		
-	}
-	this.getHeight = function() {
-		return animations[ currentAnimation ].getCurrentFrameRect().height;
-	}
-	this.getBoundary = function() {
-		return new QueenEngine.Rectangle( this.position.x, this.position.y, 
-			this.getWidth() * this.scale.x, this.getHeight() * this.scale.y );
-	}
-	this.setFramesPerSecond = function( frames ) {
-		for( key in animations )
-			animations[ key ].setFramesPerSecond( frames );
-	}
-	this.setAnimation = function( name ) {
-		for( key in animations ) {
-			if( name == key ){
-				currentAnimation = name;
-				break;
-			}
+	this.scale = new QueenEngine.Vector2(1, 1);
+	
+	Object.defineProperty( this, 'width', {
+		get: function(){
+			return this.animation.getFrame().width * this.scale.x;			
 		}
-	}
-	this.getCurrentAnimationSheet = function() {
-		return animations[ currentAnimation ];
-	}
+	} );
+	
+	Object.defineProperty( this, 'height', {
+		get: function(){
+			return this.animation.getFrame().height * this.scale.y;		
+		}
+	} );
+	
+	Object.defineProperty( this, 'boundary', {
+		get: function(){
+			return new QueenEngine.Rectangle( this.position, this.width, this.height );
+		}
+	} );
+	
+	Object.defineProperty( this, 'framesPerSecond', {
+		set: function( value ){
+			for( key in animations )
+				animations[ key ].framesPerSecond = value;
+		}
+	} );
+	
+	Object.defineProperty( this, 'animation', {
+		set: function( value ){
+			for( key in animations ){
+				if( key == value ){
+					currentAnimation = value;
+					break;
+				}
+			}
+		},
+		get: function(){
+			return animations[ currentAnimation ];
+		}
+	} );
+	
 	this.update = function( delta ) {
-		if( currentAnimation != null && this.isAnimating ) {
-			animations[ currentAnimation ].update( delta );
+		if( this.animation != null && this.isAnimating ) {
+			this.animation.update( delta );
 		}
 		
 		this.onupdate( delta );
 	}
 	this.onupdate = function( delta ){  }
 	this.draw = function( spriteBatch ) {
-		if( currentAnimation != null ) {
-			var rect = animations[ currentAnimation ].getCurrentFrameRect();
+		if( this.animation != null ) {
 			spriteBatch.drawTexture(
-				this.texture, 
+				this.animation.texture, 
 				this.position,
-				this.scale,
-				rect
+				{x: this.width, y: this.height},
+				this.animation.getFrame()
 			);
 		}
 		
 		this.ondraw( spriteBatch );
+	}
+	this.debug = function( renderer ){
+		renderer.style = 'stroke';
+		renderer.color = this.debugColor;
+		renderer.rect( this.position, this.width, this.height );
 	}
 	this.ondraw = function( spriteBatch ){  }
 	this.clone = function(){
@@ -2145,9 +2162,11 @@ QueenEngine.AnimatedSprite = function( texture, position, animations ){
 	}
 }
 
-QueenEngine.AnimationSheet = function( frames, framesPerSecond ){
+QueenEngine.AnimationSheet = function( texture, frames, framesPerSecond ){
 	var frames = frames || [];
-			
+	
+	this.texture = texture;
+	
 	var frameLength = 0;
 	var _framesPerSecond = 0;
 	
@@ -2188,5 +2207,5 @@ QueenEngine.AnimationSheet = function( frames, framesPerSecond ){
 		return obj;
 	}
 
-	this.framewPerSecond = framesPerSecond || 0;
+	this.framesPerSecond = framesPerSecond || 0;
 }

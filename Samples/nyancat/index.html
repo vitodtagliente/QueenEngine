@@ -42,59 +42,49 @@
                 device.canvas.width/2,
                 device.canvas.height/2
             );
-            
-            var sprite = new QueenEngine.BaseSprite(
+             
+            var animation = new QueenEngine.AnimationSheet(
                 nyan_cat_image,
-                {x: 100, y: 200},
-                new QueenEngine.Rectangle(null, 100, 70)  
-            );
-            /*
-            var animation = new Queen2D.AnimationSheet(
                 [ 
-                    new Queen2D.Rectangle( {x:0,y:0}, 100, 70 ),
-                    new Queen2D.Rectangle( {x:100,y:0}, 100, 70 ),
-                    new Queen2D.Rectangle( {x:200,y:0}, 100, 70 ),
-                    new Queen2D.Rectangle( {x:300,y:0}, 100, 70 ),
-                    new Queen2D.Rectangle( {x:400,y:0}, 100, 70 ),
-                    new Queen2D.Rectangle( {x:500,y:0}, 100, 70 )
+                    new QueenEngine.Rectangle( {x:0,y:0}, 100, 70 ),
+                    new QueenEngine.Rectangle( {x:100,y:0}, 100, 70 ),
+                    new QueenEngine.Rectangle( {x:200,y:0}, 100, 70 ),
+                    new QueenEngine.Rectangle( {x:300,y:0}, 100, 70 ),
+                    new QueenEngine.Rectangle( {x:400,y:0}, 100, 70 ),
+                    new QueenEngine.Rectangle( {x:500,y:0}, 100, 70 )
                 ], 10
             );
 
-            var effect_animation = new Queen2D.AnimationSheet(
-            	[
-            		new Queen2D.Rectangle( {x:0,y:0}, 146, 70 ),
-            		new Queen2D.Rectangle( {x:146,y:0}, 146, 70 )
+            var effect_animation = new QueenEngine.AnimationSheet(
+                effect_image,
+                [
+            		new QueenEngine.Rectangle( {x:0,y:0}, 146, 70 ),
+            		new QueenEngine.Rectangle( {x:146,y:0}, 146, 70 )
             	], 10
             );
 
-            var sprite = new Queen2D.AnimatedSprite(
-            	nyan_cat_image,
+            var sprite = new QueenEngine.AnimatedSprite(
             	center.sub( {x: 50, y:35} ),
             	{'walk':animation}
             );
-            sprite.setFramesPerSecond( 20 );
+            sprite.framesPerSecond = 20;
 
-            var sprite_effect = new Queen2D.AnimatedSprite(
-            	effect_image,
+            var sprite_effect = new QueenEngine.AnimatedSprite(
             	center.sub( {x:136, y:35 } ),
             	{'walk':effect_animation}
             );
-            sprite_effect.setFramesPerSecond( 10 );
-            */
+            sprite_effect.framesPerSecond = 10;
+            
             function paint(){                   
                
-               //sprite_effect.draw( d );
-               //sprite.draw( d );
-               
-               d.drawTexture( nyan_cat_image, {x: 100, y: 100} );
+               sprite_effect.draw( d );
                sprite.draw( d );
-               sprite.debug( d );
                 
             }
 
             function update(){
-               //sprite.update( gameTime.deltaTime );
-               //sprite_effect.update( gameTime.deltaTime );
+               sprite.update( gameTime.deltaTime );
+               sprite_effect.update( gameTime.deltaTime );
             }
 
             var gameTime = new QueenEngine.GameTime();
@@ -111,16 +101,14 @@
                 center = new QueenEngine.Vector2(
                     device.canvas.width/2,
                     device.canvas.height/2
-                );
-                /*
+                );                
 
                 if( sprite != null )
                 	sprite.position = center.sub( {x: 50, y:35} );
 
             	if( sprite_effect != null )
             		sprite_effect.position = center.sub( {x:136, y:35 } );
-                */
-
+                
             }
 
 

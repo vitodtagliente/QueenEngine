@@ -6,19 +6,19 @@ QueenEngine.BaseSprite = function( texture, position, rect ){
 	this.texture = texture;
 	var sourceRectangle = rect.clone() || new QueenEngine.Rectangle( 0, 0, texture.width, texture.height );
 	
-	this.scale = null;
+	this.scale = new QueenEngine.Vector2(1, 1);
 
 	this.debugColor = '#8080C0';
 	
 	Object.defineProperty( this, 'width', {
 		get: function(){
-			return sourceRectangle.width;
+			return sourceRectangle.width * this.scale.x;
 		}
 	} );
 	
 	Object.defineProperty( this, 'height', {
 		get: function(){
-			return sourceRectangle.height;
+			return sourceRectangle.height * this.scale.y;
 		}
 	} );
 	
@@ -36,7 +36,7 @@ QueenEngine.BaseSprite = function( texture, position, rect ){
 		renderer.drawTexture(
 			this.texture, 
 			this.position,
-			this.scale,
+			{x: this.width, y: this.height},
 			sourceRectangle
 		);
 		
